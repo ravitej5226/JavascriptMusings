@@ -30,7 +30,7 @@
             clearInterval(game_loop);
         }
 
-        game_loop = setInterval(paint, 30);
+        game_loop = setInterval(paint, 50);
     }
 
 
