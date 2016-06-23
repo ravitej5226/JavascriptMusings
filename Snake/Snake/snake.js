@@ -9,6 +9,9 @@
 
     // Initialize variables
     var cellWidth = 10;
+    var offset = 0;
+    canvasWidth = canvasWidth - offset;
+    canvasHeight = canvasHeight - offset;
     var cornerRadius = 8;
     var direction;
     var food;
@@ -38,22 +41,22 @@
         var length_of_snake = 15;
         snake_array = [];
 
-        var yIndex = Math.ceil(Math.random() * ((canvasHeight - cellWidth) / cellWidth));
+        var yIndex = Math.ceil(Math.random() * (((canvasHeight - 1) - cellWidth) / (cellWidth)));//+ (offset / 2);
 
         console.log("Starting Index: (" + 0 + "," + yIndex + ")");
 
-
-        for (var index = length_of_snake - 1; index >= 0 ; index--) {
-            snake_array.push({ x: index, y: yIndex });
+        for (var index = length_of_snake + 2; index >= 1 ; index--) {
+            snake_array.push({ x: index, y: 1 });
+            console.log(index, 0);
         }
     }
 
     function paint() {
         // Clear out and recolor canvas for every frame
-        context.fillStyle = "white";
-        context.fillRect(0, 0, canvasWidth, canvasHeight);
-        context.strokeStyle = "red";
-        context.strokeRect(0, 0, canvasWidth - 1, canvasHeight - 1)
+        context.fillStyle = "White";
+        context.fillRect(offset / 2, offset / 2, canvasWidth, canvasHeight);
+        context.strokeStyle = "Black";
+        context.strokeRect(0, 0, canvasWidth + (offset), canvasHeight + (offset))
 
         paint_grids(0, 0, canvasWidth, canvasHeight);
 
@@ -98,8 +101,31 @@
             var tail = snake_array.pop();
 
             // Handling lower and higher margins of canvas
-            tail.x = (nx + (canvasWidth / 10)) % (canvasWidth / 10);
-            tail.y = (ny + (canvasHeight / 10)) % (canvasHeight / 10);
+            // tail.x = (nx + ((canvasWidth / 10) + (offset / 20))) % ((canvasWidth / 10) + (offset / 20));
+            tail.x = (nx + ((canvasWidth / 10) - 1)) % ((canvasWidth / 10) - 1);
+
+            if (tail.x == 0 && nx != 0) {
+                tail.x = 1;
+            }
+            else if (tail.x == 0 && nx == 0) {
+                tail.x = (canvasWidth / 10) - 2;
+            }
+            //if (tail.x == 0 && nx != 0) {
+            //    tail.x = (offset / 20);
+            //}
+            //else if (nx == 0)
+            //{
+            //    tail.x = ((canvasWidth + (offset / 2)) / 10)-(offset/20);
+            //}
+            tail.y = (ny + ((canvasHeight) / 10) - 1) % ((canvasHeight / 10) - 1);
+
+            if (tail.y == 0 && ny != 0) {
+                tail.y = 1;
+            }
+            else if (tail.y == 0 && ny == 0) {
+                tail.y = (canvasHeight / 10) - 2;
+            }
+            // console.log(nx);
         }
 
         snake_array.unshift(tail);
@@ -119,34 +145,48 @@
 
     function create_food() {
         food = {
-            x: Math.round(Math.random() * ((canvasWidth - cellWidth) / cellWidth)),
-            y: Math.round(Math.random() * ((canvasHeight - cellWidth) / cellWidth)),
+            x: Math.round(Math.random() * ((canvasWidth - cellWidth - offset) / cellWidth - 1)),
+            y: Math.round(Math.random() * ((canvasHeight - cellWidth - offset) / cellWidth - 1)),
+        }
+
+        if (food.x == 0) {
+            food.x = 1;
+        }
+
+        if (food.y == 0) {
+            food.y = 1;
         }
     }
 
     function paint_grids(xIndex, yIndex, canvasWidth, canvasHeight) {
 
-        for (var index = 0; index < canvasWidth; index = index + 10) {
+        // Horizontal lines
+        for (var index = xIndex; index <= canvasWidth + (offset / 2) ; index = index + 10) {
             context.beginPath();
-            context.moveTo(index, yIndex);
+            context.moveTo(index, yIndex + 10 + (offset / 2));
 
-            context.lineTo(index, yIndex + canvasHeight);
+            context.lineTo(index, yIndex + canvasHeight - 10 + (offset / 2));
             context.closePath();
             context.lineWidth = 0.3;
             context.stroke();
             context.strokeStyle = "#e0ebeb";
+            // context.strokeStyle = "black";
+
+            //  console.log("(" + index + "," + yIndex + ") to (" + index + "," + (yIndex + canvasHeight) + ")");
             // context.fill();
         }
 
-        for (var index = 0; index < canvasHeight; index = index + 10) {
+        for (var index = yIndex; index <= canvasHeight + (offset / 2) ; index = index + 10) {
             context.beginPath();
-            context.moveTo(xIndex, index);
+            context.moveTo(xIndex + 10 + (offset / 2), index);
 
-            context.lineTo(xIndex + canvasWidth, index);
+            context.lineTo(xIndex + canvasWidth - 10 + (offset / 2), index);
             context.closePath();
             context.lineWidth = 0.3;
             context.stroke();
             context.strokeStyle = "#e0ebeb";
+            // context.strokeStyle = "black";
+
             // context.fill();
         }
     }
@@ -158,12 +198,33 @@
                 paint_head(bit.x, bit.y);
             }
             else {
-                paint_cell(bit.x, bit.y);
+                paint_body(bit.x, bit.y);
             }
+
+            console.log(bit.x + "," + bit.y);
         }
     }
 
     function paint_cell(x, y) {
+        //context.lineJoin = "round";
+        
+
+        //context.fillStyle = "blue";
+        //context.fillRect((x * cellWidth) + (cornerRadius / 2), (y * cellWidth) + (cornerRadius / 2), cellWidth - cornerRadius, cellWidth - cornerRadius);
+        //context.strokeStyle = "blue";
+        //context.strokeRect((x * cellWidth) + (cornerRadius / 2), (y * cellWidth) + (cornerRadius / 2), cellWidth - cornerRadius, cellWidth - cornerRadius);
+        context.beginPath();
+        context.strokeStyle = "blue";
+       
+        context.arc((x * cellWidth) + (cornerRadius / 2) + 1, (y * cellWidth) + (cornerRadius / 2) + 1, (cellWidth - cornerRadius) / 2, 0, Math.PI * 2, false);
+
+        context.stroke();
+        context.lineWidth = 4;
+        context.strokeStyle = 'blue';
+        context.stroke();
+    }
+
+    function paint_body(x, y) {
         context.lineJoin = "round";
         context.lineWidth = cornerRadius;
 
@@ -171,9 +232,7 @@
         context.fillRect((x * cellWidth) + (cornerRadius / 2), (y * cellWidth) + (cornerRadius / 2), cellWidth - cornerRadius, cellWidth - cornerRadius);
         context.strokeStyle = "blue";
         context.strokeRect((x * cellWidth) + (cornerRadius / 2), (y * cellWidth) + (cornerRadius / 2), cellWidth - cornerRadius, cellWidth - cornerRadius);
-
     }
-
     function paint_head(x, y) {
         context.lineJoin = "round";
         context.lineWidth = cornerRadius;
@@ -198,7 +257,7 @@
                 console.log("Game over");
                 clearInterval(game_loop);
                 paint_snake(snake_array);
-                paint_cell(food.x, food.y);
+                paint_body(food.x, food.y);
                 paint_bitten_cell(x, y);
                 //  paint_bitten_cell(array[i].x, array[i].y)
                 // TODO: Go to game over proceeding
