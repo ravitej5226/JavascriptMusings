@@ -275,7 +275,7 @@
             }
             else
             {
-                $("#divHistory")[0].innerHTML = "Nothing to show here!";
+                $("#divHistoryLinkHeaderContainer").hide();
             }
 
             
