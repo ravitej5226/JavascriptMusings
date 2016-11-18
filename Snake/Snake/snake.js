@@ -253,24 +253,36 @@
             // Get the current Index
             var index = localStorage.getItem("currentIndex");          
 
-            // Display last five values
-            for (var counter = index; counter > (index - 5) ; counter--) {
-                // Create a div element
-                var imageContainer = '<a class="historyLink" href="{0}" id="screenshot" download="snake_{1}.png" ><img src="{2}" width="75" height="75" /></a>'
-                // download="snake_{1}.png"
-                // assign it to container
-                var image = localStorage.getItem("image" + counter);
-                if (image) {
-                    imageContainer = imageContainer.replace("{0}", image);
-                    imageContainer = imageContainer.replace("{1}", counter);
-                    imageContainer = imageContainer.replace("{2}", image);
+            if (index) {
+                // Display last five values
+                for (var counter = index; counter > (index - 5) ; counter--) {
+                    // Create a div element
+                    var imageContainer = '<a class="historyLink" href="{0}" id="screenshot" download="snake_{1}.png" ><img src="{2}" width="75" height="75" /></a>'
+                    // download="snake_{1}.png"
+                    // assign it to container
+                    var image = localStorage.getItem("image" + counter);
+                    if (image) {
+                        imageContainer = imageContainer.replace("{0}", image);
+                        imageContainer = imageContainer.replace("{1}", counter);
+                        imageContainer = imageContainer.replace("{2}", image);
 
-                    $("#divHistory")[0].innerHTML += imageContainer;
-                }
-                else {
-                    break;
+                        $("#divHistory")[0].innerHTML += imageContainer;
+                    }
+                    else {
+                        break;
+                    }
                 }
             }
+            else
+            {
+                $("#divHistory")[0].innerHTML = "Nothing to show here!";
+            }
+
+            
+        }
+        else
+        {
+            $("#divHistoryLinkHeaderContainer").hide();
         }
     }
 
