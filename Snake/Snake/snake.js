@@ -62,27 +62,39 @@
             console.log(index, 0);
         }
     }
-    function loadTheBoard()
-    {
+    function loadTheBoard(alpha)
+    {        
+        context.globalAlpha = alpha;
+
         // Clear out and recolor canvas for every frame
         context.fillStyle = "White";
         context.fillRect(offset / 2, offset / 2, canvasWidth, canvasHeight);
+
+        context.globalAlpha = alpha;
         context.strokeStyle = "Black";
         context.strokeRect(0, 0, canvasWidth + (offset), canvasHeight + (offset))
 
         paint_grids(0, 0, canvasWidth, canvasHeight);
     }
 
-    function loadTheStartControls()
+    function loadTheStartControls(alpha)
     {
+        context.globalAlpha = alpha;
         context.fillStyle = "Black";
         context.font = "30px Calibri";
         context.fillText("Press space to start the game!",42,220);
     }
 
-    function paint() {
+    function paint(alpha) {
 
-        loadTheBoard();
+        if (alpha)
+        {
+
+        }
+        else {
+            alpha = 1;
+        }
+        loadTheBoard(alpha);
        
 
         var nx = snake_array[0].x;
@@ -176,7 +188,9 @@
         }
     }
 
-    function EndTheGame() {
+    function EndTheGame() {       
+        
+        //paintEndGame(0.5);
         isGameInProgress = false;
 
         // Take the picture
@@ -193,6 +207,18 @@
         storeImageInHistory(image);
         showHistory();
        
+        loadCanvas();
+    }
+
+    function paintEndGame(alpha)
+    {
+        loadTheBoard(alpha);
+
+        // Paint the snake
+        paint_snake(snake_array);
+
+        // Place the food randomly       
+        paint_cell(food.x, food.y);
     }
 
     function storeImageInHistory(image)
@@ -390,9 +416,9 @@
 
     function loadCanvas() {
         // Initialize game controls
-        
-        loadTheBoard();
-        loadTheStartControls();
+       
+        loadTheBoard(0.5);
+        loadTheStartControls(1);
 
         // Initialize score
 
