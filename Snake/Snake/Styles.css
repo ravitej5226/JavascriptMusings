@@ -23,9 +23,26 @@
 
 .gameOver{
     font-size:40px;
+    color:#cc2f2f;
 }
 
 .score-container{
     margin-top:20px;
     font-size:30px;
+}
+
+.historyLink
+{
+    padding:5px;
+}
+.historyFinePrint{
+    font-size:12px;
+    font-weight:normal;
+}
+.historyHeader{
+    margin-bottom:0px;
+}
+.historyLinkHeaderContainer
+{
+    padding-bottom:15px;
 }

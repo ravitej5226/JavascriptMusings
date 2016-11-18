@@ -9,7 +9,8 @@
 <body>
 
     <div class="canvas">
-        <canvas id="canvas" width="450" height="450"></canvas>
+        <canvas id="canvas" width="450" height="450">            
+        </canvas>
     </div>
     <div class="gameSettings">
         <h2>Welcome!</h2>
@@ -19,9 +20,25 @@
             <span class="score-title">Score: </span>
             <span id="Score" class="score-value">0 </span>
         </div>
+      
+
+        <div class="historyLinkHeaderContainer">
+            <!--<div class="historyHeader"> Last five games:</div>-->
+            <h3 class="historyHeader">
+                Last five games:
+            </h3>
+            <div class="historyFinePrint">(click image to download)</div>
+
+        </div>
+        <div id="divHistory">
+            <!-- <a href="#" id="screenshot" download="snake.png"><img id="screenshotImage" width="75" height="75" download /></a>-->
+
+        </div>
+
         <div>
             <span class="gameOver" id="gameOver"></span>
         </div>
+
     </div>
 
 </body>

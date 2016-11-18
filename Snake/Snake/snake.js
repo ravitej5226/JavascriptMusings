@@ -18,15 +18,18 @@
     var score;
     var game_loop;
     var isOperationProcessed = true;
+    var isGameInProgress = false;
 
     // Initialize snake array
     var snake_array;
 
-    init = function () {
+    init = function () {     
+
         direction = "right";
         create_snake();
         create_food();
         score = 0;
+        isGameInProgress = true;
 
         // Loop the game
         if (typeof (game_loop) != undefined) {
@@ -36,6 +39,15 @@
         game_loop = setInterval(paint, 50);
     }
 
+    function hideScreenshots() {
+        $("#screenshot").hide();
+        $("#screenshotImage").hide();
+    }
+
+    function showScreenshots() {
+        $("#screenshot").show();
+        $("#screenshotImage").show();
+    }
 
     function create_snake() {
         var length_of_snake = 15;
@@ -50,8 +62,8 @@
             console.log(index, 0);
         }
     }
-
-    function paint() {
+    function loadTheBoard()
+    {
         // Clear out and recolor canvas for every frame
         context.fillStyle = "White";
         context.fillRect(offset / 2, offset / 2, canvasWidth, canvasHeight);
@@ -59,6 +71,19 @@
         context.strokeRect(0, 0, canvasWidth + (offset), canvasHeight + (offset))
 
         paint_grids(0, 0, canvasWidth, canvasHeight);
+    }
+
+    function loadTheStartControls()
+    {
+        context.fillStyle = "Black";
+        context.font = "30px Calibri";
+        context.fillText("Press space to start the game!",42,220);
+    }
+
+    function paint() {
+
+        loadTheBoard();
+       
 
         var nx = snake_array[0].x;
         var ny = snake_array[0].y;
@@ -86,6 +111,8 @@
 
         // Check collision
         if (check_collision(nx, ny, snake_array)) {
+            EndTheGame();
+
             return;
         }
 
@@ -100,8 +127,7 @@
             // Move the snake
             var tail = snake_array.pop();
 
-            // Handling lower and higher margins of canvas
-            // tail.x = (nx + ((canvasWidth / 10) + (offset / 20))) % ((canvasWidth / 10) + (offset / 20));
+            // Handling lower and higher margins of canvas         
             tail.x = (nx + ((canvasWidth / 10) - 1)) % ((canvasWidth / 10) - 1);
 
             if (tail.x == 0 && nx != 0) {
@@ -110,13 +136,7 @@
             else if (tail.x == 0 && nx == 0) {
                 tail.x = (canvasWidth / 10) - 2;
             }
-            //if (tail.x == 0 && nx != 0) {
-            //    tail.x = (offset / 20);
-            //}
-            //else if (nx == 0)
-            //{
-            //    tail.x = ((canvasWidth + (offset / 2)) / 10)-(offset/20);
-            //}
+
             tail.y = (ny + ((canvasHeight) / 10) - 1) % ((canvasHeight / 10) - 1);
 
             if (tail.y == 0 && ny != 0) {
@@ -133,9 +153,7 @@
         // Paint the snake
         paint_snake(snake_array);
 
-
-        // Place the food randomly
-        //  create_food();
+        // Place the food randomly       
         paint_cell(food.x, food.y);
 
         //Lets paint the score
@@ -155,6 +173,78 @@
 
         if (food.y == 0) {
             food.y = 1;
+        }
+    }
+
+    function EndTheGame() {
+        isGameInProgress = false;
+
+        // Take the picture
+        var image = canvas.toDataURL("image/png");
+
+        // Display the anchor tag
+        showScreenshots();
+
+        // Set the href
+        $("#screenshot").attr("href", image);
+        $("#screenshotImage").attr("src", image);
+
+
+        storeImageInHistory(image);
+        showHistory();
+       
+    }
+
+    function storeImageInHistory(image)
+    {
+        // Store the data of the game
+        if (window.localStorage) {
+            // Get the current Index
+            var index = localStorage.getItem("currentIndex");
+
+            if (index) {
+                // Increment the current index
+                index++;
+            }
+            else {
+                // Initialize the index
+                index = 0;
+            }
+
+            localStorage.setItem("currentIndex", index);
+
+            // Store the values
+            localStorage.setItem("score" + index, score);
+            localStorage.setItem("image" + index, image);
+        }
+    }
+
+    function showHistory() {
+
+        $("#divHistory")[0].innerHTML = "";
+        // Store the data of the game
+        if (window.localStorage) {
+            // Get the current Index
+            var index = localStorage.getItem("currentIndex");          
+
+            // Display last five values
+            for (var counter = index; counter > (index - 5) ; counter--) {
+                // Create a div element
+                var imageContainer = '<a class="historyLink" href="{0}" id="screenshot" download="snake_{1}.png" ><img src="{2}" width="75" height="75" /></a>'
+                // download="snake_{1}.png"
+                // assign it to container
+                var image = localStorage.getItem("image" + counter);
+                if (image) {
+                    imageContainer = imageContainer.replace("{0}", image);
+                    imageContainer = imageContainer.replace("{1}", counter);
+                    imageContainer = imageContainer.replace("{2}", image);
+
+                    $("#divHistory")[0].innerHTML += imageContainer;
+                }
+                else {
+                    break;
+                }
+            }
         }
     }
 
@@ -207,20 +297,20 @@
 
     function paint_cell(x, y) {
         //context.lineJoin = "round";
-        
+
 
         //context.fillStyle = "blue";
         //context.fillRect((x * cellWidth) + (cornerRadius / 2), (y * cellWidth) + (cornerRadius / 2), cellWidth - cornerRadius, cellWidth - cornerRadius);
         //context.strokeStyle = "blue";
         //context.strokeRect((x * cellWidth) + (cornerRadius / 2), (y * cellWidth) + (cornerRadius / 2), cellWidth - cornerRadius, cellWidth - cornerRadius);
         context.beginPath();
-        context.strokeStyle = "blue";
-       
+        context.strokeStyle = "brown";
+
         context.arc((x * cellWidth) + (cornerRadius / 2) + 1, (y * cellWidth) + (cornerRadius / 2) + 1, (cellWidth - cornerRadius) / 2, 0, Math.PI * 2, false);
 
         context.stroke();
         context.lineWidth = 4;
-        context.strokeStyle = 'blue';
+        context.strokeStyle = 'brown';
         context.stroke();
     }
 
@@ -233,6 +323,7 @@
         context.strokeStyle = "blue";
         context.strokeRect((x * cellWidth) + (cornerRadius / 2), (y * cellWidth) + (cornerRadius / 2), cellWidth - cornerRadius, cellWidth - cornerRadius);
     }
+
     function paint_head(x, y) {
         context.lineJoin = "round";
         context.lineWidth = cornerRadius;
@@ -257,8 +348,8 @@
                 console.log("Game over");
                 clearInterval(game_loop);
                 paint_snake(snake_array);
-                paint_body(food.x, food.y);
                 paint_bitten_cell(x, y);
+                paint_cell(food.x, food.y);
                 //  paint_bitten_cell(array[i].x, array[i].y)
                 // TODO: Go to game over proceeding
                 $("#gameOver").text("Game over :(");
@@ -271,10 +362,16 @@
     }
 
     $(document).keydown(function (e) {
+        var key = e.which;
+
+        if (key == 32) {
+            if (!isGameInProgress) {
+                init();
+            }
+        }
 
         if (isOperationProcessed) {
             isOperationProcessed = false;
-            var key = e.which;
 
             if (key == 37 && direction != "right") {
                 direction = "left";
@@ -290,7 +387,22 @@
             }
         }
     });
+
+    function loadCanvas() {
+        // Initialize game controls
+        
+        loadTheBoard();
+        loadTheStartControls();
+
+        // Initialize score
+
+        // Initialize history
+        showHistory();
+    }
+    
+    loadCanvas();
 });
+
 
 function onStartGameClick() {
     $("#gameOver").text("");
