@@ -254,6 +254,7 @@
             var index = localStorage.getItem("currentIndex");          
 
             if (index) {
+                $("#divHistoryLinkHeaderContainer").show();
                 // Display last five values
                 for (var counter = index; counter > (index - 5) ; counter--) {
                     // Create a div element
