@@ -405,6 +405,7 @@
 
         if (key == 32) {
             if (!isGameInProgress) {
+                $("#gameOver").text("");
                 init();
             }
         }
@@ -432,6 +433,7 @@
        
         loadTheBoard(0.5);
         loadTheStartControls(1);
+        
 
         // Initialize score
 
